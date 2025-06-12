@@ -83,7 +83,21 @@ try{
   return posts;
 
 }catch(error){
-   console.log("Eror fecthing posts",error);
+   console.log("Error fecthing posts",error);
    return []
 }
+}
+
+
+export async function toggleLike(postId:string){
+
+}
+
+
+export async function createComment(postid:string,comment:string){
+
+}
+
+export async function deletePost(postid:string){
+  
 }
