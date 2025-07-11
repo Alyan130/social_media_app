@@ -3,9 +3,9 @@ import { getDbUserId } from "@/actions/user.actions";
 import PostCard from "@/components/shared/PostCard";
 import CreatePost from "@/components/widget/CreatePost";
 import Follow from "@/components/widget/Follow";
+import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { PodcastIcon } from "lucide-react";
-
 
 type Posts = Awaited<ReturnType<typeof getPosts>>;
 
@@ -13,7 +13,7 @@ export default async function Home() {
 
  const user =  await currentUser()
  const posts:Posts =  await getPosts(); 
- const dbuserId = await getDbUserId()
+ const userId = await getDbUserId()
 
 
   return (
@@ -22,7 +22,7 @@ export default async function Home() {
      { user ? <CreatePost/> : <PodcastIcon size={40}/> }
 
      <div className="space-y-6">
-   {posts?.map(post=><PostCard key={post.id} post={post} dbUserId={dbuserId || ""} />)}
+   {posts?.map(post=><PostCard key={post.id} post={post} dbUserId={userId}/>)}
     </div>
     </div>
 
@@ -32,3 +32,5 @@ export default async function Home() {
   </main>
   )
 }
+
+

@@ -17,6 +17,9 @@ function CreatePost() {
   const [isPosting, setIsPosting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
 
+  function handleSubmit(){
+
+  }
 
   async function handleCreatePost(){
     if(!content.trim() && !imageUrl){
@@ -52,7 +55,7 @@ function CreatePost() {
       <Card className="mb-6">
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-start gap-x-3 text-sm">
+            <div className="flex items-center justify-start gap-x-3">
               <Textarea
                 placeholder="Whats on your mind?"
                 onClick={(event) => setContent(event.currentTarget.value)}
@@ -62,25 +65,30 @@ function CreatePost() {
             </div>
           </div>
 
-          <div className="w-full pt-6 flex items-center justify-between px-4">
+      
+          <div className="flex items-center justify-between border-t pt-4">
+            <div className="flex space-x-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-primary"
+                onClick={() => setShowImageUpload(!showImageUpload)}
+                disabled={isPosting}
+              >
+                <ImageIcon className="size-4 mr-2" />
+                Photo
+              </Button>
+            </div>
             <Button
-              className="bg-background hover-none dark:text-muted-foreground text-gray-600 flex gap-x-3 rounded-md"
-              onClick={() => setShowImageUpload(!showImageUpload)}
-              disabled={isPosting}
-            >
-              <ImageIcon />
-              Photo
-            </Button>
-
-            <Button
-              className="bg-primary dark:bg-secondary flex gap-x-3 rounded-md items-center runded-md"
-              onClick={handleCreatePost}
+              className="flex items-center"
+              onClick={handleSubmit}
               disabled={(!content.trim() && !imageUrl) || isPosting}
             >
               {isPosting ? (
                 <>
-                  <Loader2Icon className="animate-spin mr-3" />
-                 posting...
+                  <Loader2Icon className="size-4 mr-2 animate-spin" />
+                  Posting...
                 </>
               ) : (
                 <>
@@ -90,9 +98,9 @@ function CreatePost() {
               )}
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </>
+      </CardContent>
+    </Card>
+   </>
   );
 }
 

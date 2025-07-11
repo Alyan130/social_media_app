@@ -13,7 +13,6 @@ function FollowButton({userId}:{userId:string}) {
 
 async function handleFollow(){
  setLoading(true)
-
  try{
    await toggleFollow(userId)
   successToast("followed user successfully!")
@@ -27,8 +26,6 @@ async function handleFollow(){
   setLoading(false)
 
  }
-
-
 }
 
   return (

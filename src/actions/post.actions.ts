@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { getDbUserId } from "./user.actions"
 import { revalidatePath } from "next/cache"
+import { NODE_ESM_RESOLVE_OPTIONS } from "next/dist/build/webpack-config"
 
 
 export async function postCreation(content:string,image:string){  
@@ -91,13 +92,145 @@ try{
 
 export async function toggleLike(postId:string){
 
+  try{
+
+  const userId = await getDbUserId();
+  if (!userId) return;
+
+  const existingLike = await prisma.like.findUnique({
+    where:{
+      userId_postId:{
+        userId:userId,
+        postId:postId
+      }
+    }
+  })
+
+  const post = await prisma.post.findUnique({
+    where:{
+      id:postId
+    },
+    select:{authorId:true}
+  })
+
+if (!post) throw new Error("Post not found");
+
+if(existingLike){
+   await prisma.like.delete({
+    where:{
+      userId_postId:{
+         userId:userId,
+         postId:postId
+      }
+    }
+   })  
+}else{
+  await prisma.$transaction([
+    prisma.like.create({
+      data: {
+        userId,
+        postId,
+      },
+    }),
+    ...(post.authorId !== userId
+      ? [
+          prisma.notification.create({
+            data: {
+              type: "LIKE",
+              userId: post.authorId,
+              creatorId: userId,
+              postId,
+            },
+          }),
+        ]
+      : []),
+  ]); 
+  revalidatePath("/")
+  return {success:true}
+} 
+  } catch(error){
+    console.log(error);
+    return {success:false,message:"unable to like post"}
+}
 }
 
 
-export async function createComment(postid:string,comment:string){
-
-}
-
-export async function deletePost(postid:string){
+export async function createComment(postId:string,content:string){
   
+  try{
+
+  const userId = await getDbUserId();
+  
+  if(!userId) return;
+   
+  const post = await prisma.post.findUnique({
+    where:{
+      id:postId
+    },
+    select:{authorId:true}
+  })
+
+  if (!post) throw new Error("Post not found");
+  
+  const [comment] = await prisma.$transaction(async (tx) => {
+    const newComment = await tx.comment.create({
+      data: {
+        content:content,
+        authorId: userId,
+        postId,
+      },
+    });
+
+    if (post.authorId !== userId) {
+      await tx.notification.create({
+        data: {
+          type: "COMMENT",
+          userId: post.authorId,
+          creatorId: userId,
+          postId,
+          commentId: newComment.id,
+        },
+      });
+    }
+    return [newComment];
+  });
+
+   revalidatePath("/")
+   return {success:true,comment}
+} catch(error){
+  console.log(error);
+  return {success:false,message:"unable to create comment"}
+}
+ }
+
+export async function deletePost(postId:string){
+
+  try{
+   const userId = await getDbUserId();
+  
+   if(!userId) return;
+
+   const post = await prisma.post.findUnique({
+     where :{
+      id:postId
+     },
+     select :{authorId:true} 
+   })
+
+   if (!post) throw new Error("Post not found");
+   
+   if(post.authorId !== userId) return;
+    
+   await prisma.post.delete({
+    where:{
+      id:postId
+    }    
+   })
+  
+   revalidatePath("/")
+   return {success:true,message:"post deleted successfully"}
+  }catch(error){
+    console.log(error);
+    return {success:false,message:"unable to delete post"}
+  }
 }

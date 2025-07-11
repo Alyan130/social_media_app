@@ -4,13 +4,9 @@ import Link from "next/link";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { getRandomUsers } from '@/actions/user.actions';
 import FollowButton from '../shared/FollowButton';
-import { log } from 'util';
 
 async function Follow() {
 const users = await getRandomUsers();
-
-console.log(users);
-
 
   return (
     <>

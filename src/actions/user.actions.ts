@@ -118,7 +118,6 @@ export async function getRandomUsers(){
 
   
 export async function toggleFollow(targetUserId:string){
-  
   try{
   const userId = await getDbUserId()
   
@@ -162,7 +161,6 @@ export async function toggleFollow(targetUserId:string){
       }),
     ]);
   }
-
     revalidatePath("/")
     return {"success":true}
   }catch(error){
