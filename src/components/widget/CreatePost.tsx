@@ -1,71 +1,72 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { Textarea } from "../ui/textarea";
 import { ImageIcon, Loader2Icon, SendIcon } from "lucide-react";
-import { Button } from "../ui/button"
+import { Button } from "../ui/button";
 import { errorToast, successToast } from "../shared/Toast";
 import { postCreation } from "@/actions/post.actions";
-
-
+import MediaUpload from "../shared/UploadMedia";
 
 function CreatePost() {
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [isPosting, setIsPosting] = useState(false);
-  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [showMediaUpload, setShowMediaUpload] = useState(false);
 
-  function handleSubmit(){
+  async function handleCreatePost() {
+    if (!content.trim() && !mediaUrl) {
+      errorToast("Please add content or media to create post!");
+      return;
+    }
 
+    setIsPosting(true);
+    try {
+      const res = await postCreation(content, mediaUrl, mediaType); 
+      if (res?.success) {
+        setContent("");
+        setMediaUrl("");
+        setMediaType(null);
+        setShowMediaUpload(false);
+        successToast("Post created successfully!");
+      }
+    } catch (error) {
+      console.log("Error creating post..", error);
+      errorToast("Error creating post!");
+    } finally {
+      setIsPosting(false);
+    }
   }
 
-  async function handleCreatePost(){
-    if(!content.trim() && !imageUrl){
-      errorToast("Please add data to create post!")
-      return
-    }
- 
-    try{
-    const res = await postCreation(content, imageUrl)
-    if(res?.success){
-       setContent("")
-       setImageUrl("")
-       setShowImageUpload(false)
-      
-       successToast("Post created Succesfully!")
-       console.log(res.post);
-       
-    }
-    }
-    catch(error){
-      console.log("Error creating post..",error);
-      errorToast("Error creating post!")
-      return
-    }
-    finally{
-      setIsPosting(false)
-    }
-
- }
 
   return (
     <>
       <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-start gap-x-3">
-              <Textarea
-                placeholder="Whats on your mind?"
-                onClick={(event) => setContent(event.currentTarget.value)}
-                className="text-muted-foreground text-xl font-semibold min-h-[120px] p-4"
-                disabled={isPosting}
-              />
-            </div>
-          </div>
-
+        <CardContent className="pt-6 space-y-4">
+          {/* Text input */}
+          <Textarea
+            placeholder="What's on your mind?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="text-muted-foreground text-xl font-semibold min-h-[120px] p-4"
+            disabled={isPosting}
+          />
       
+          {showMediaUpload && (
+            <MediaUpload
+              endpoint="mediaUploader"
+              value={mediaUrl}
+              fileType={mediaType}
+              onChange={(url, type) => {
+                setMediaUrl(url);
+                setMediaType(type as "image" | "video");
+              }}
+            />
+          )}
+
+          {/* Buttons */}
           <div className="flex items-center justify-between border-t pt-4">
             <div className="flex space-x-2">
               <Button
@@ -73,17 +74,17 @@ function CreatePost() {
                 variant="ghost"
                 size="sm"
                 className="text-muted-foreground hover:text-primary"
-                onClick={() => setShowImageUpload(!showImageUpload)}
+                onClick={() => setShowMediaUpload(!showMediaUpload)}
                 disabled={isPosting}
               >
                 <ImageIcon className="size-4 mr-2" />
-                Photo
+                {showMediaUpload ? "Remove" : "Photo/Video"}
               </Button>
             </div>
             <Button
               className="flex items-center"
-              onClick={handleSubmit}
-              disabled={(!content.trim() && !imageUrl) || isPosting}
+              onClick={handleCreatePost}
+              disabled={(!content.trim() && !mediaUrl) || isPosting}
             >
               {isPosting ? (
                 <>
@@ -98,9 +99,9 @@ function CreatePost() {
               )}
             </Button>
           </div>
-      </CardContent>
-    </Card>
-   </>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

@@ -47,7 +47,8 @@ model Post {
   id        String   @id @default(cuid())
   authorId  String
   content   String?
-  image     String?
+  mediaUrl  String?
+  mediaType String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

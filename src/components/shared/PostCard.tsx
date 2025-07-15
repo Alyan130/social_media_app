@@ -122,14 +122,16 @@ finally{
                  : null
                 }
                 </div>
-                <p className="mt-2 text-sm text-foreground break-words">{post.content}</p>
+                <p className="mt-1 text-sm text-foreground break-words">{post.content}</p>
             </div>
           </div>
 
-          {post.image && (
+          {post.mediaUrl &&  
+            post.mediaType == "image" &&
+           (
             <div className='rounded-lg overflow-hidden'>
              <Image
-              src={post.image}
+              src={post.mediaUrl as string}
               alt='Post Image'
               className='w-full h-full object-cover'
               width={300}
@@ -138,7 +140,22 @@ finally{
              />
             </div>
           )
+           }
+
+
+           {post.mediaUrl &&
+           post.mediaType == "video" &&
+           (
+            <div className='rounded-lg overflow-hidden'>
+             <video
+              src={post.mediaUrl as string}
+              className='w-full h-full object-cover'
+              controls
+             />
+            </div>
+           )
           }
+        
           
           <div className="flex items-center space-x-4 pt-2">
           {user ? (

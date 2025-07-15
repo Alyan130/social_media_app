@@ -3,10 +3,9 @@
 import prisma from "@/lib/prisma"
 import { getDbUserId } from "./user.actions"
 import { revalidatePath } from "next/cache"
-import { NODE_ESM_RESOLVE_OPTIONS } from "next/dist/build/webpack-config"
 
 
-export async function postCreation(content:string,image:string){  
+export async function postCreation(content:string,type:string,url:string|null){  
 
   const userId = await getDbUserId()
  
@@ -16,7 +15,8 @@ export async function postCreation(content:string,image:string){
   const post = await prisma.post.create({
     data:{
       content,
-      image,
+      mediaUrl:type,
+      mediaType:url,
       authorId:userId
     }
     })
@@ -203,6 +203,8 @@ export async function createComment(postId:string,content:string){
 }
  }
 
+
+ 
 export async function deletePost(postId:string){
 
   try{
