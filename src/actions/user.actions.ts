@@ -36,6 +36,9 @@ export async function syncUser(){
 }
 
 
+
+
+
 export async function getUserByClerkId(clerkId: string){
   try{
     const dbUser = await prisma.user.findUnique({
@@ -168,3 +171,35 @@ export async function toggleFollow(targetUserId:string){
       return { success: false, error: "Error toggling follow" }
   }
   }
+
+
+  
+export async function getAllUsers(){
+ try{
+  const userId = await getDbUserId()
+  if (!userId) return;
+
+  const allUsers = await prisma.user.findMany({
+    where:{
+      NOT:{id:userId}
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      image: true,
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  })
+
+  return allUsers;
+ }catch(error){
+  console.log("Error fetching all users", error);
+  return []
+ }
+}
+

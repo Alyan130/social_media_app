@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { Textarea } from "../ui/textarea";
-import { ImageIcon, Loader2Icon, SendIcon } from "lucide-react";
+import { BotIcon, ImageIcon, Loader2Icon, SendIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { errorToast, successToast } from "../shared/Toast";
 import { postCreation } from "@/actions/post.actions";
 import MediaUpload from "../shared/UploadMedia";
+import PostDialog from "../shared/AIDilalog";
 
 function CreatePost() {
   const [content, setContent] = useState("");
@@ -77,9 +78,24 @@ function CreatePost() {
                 onClick={() => setShowMediaUpload(!showMediaUpload)}
                 disabled={isPosting}
               >
-                <ImageIcon className="size-4 mr-2" />
+                <ImageIcon className="size-4 mr-[2px]" />
                 {showMediaUpload ? "Remove" : "Photo/Video"}
               </Button>
+          
+             <PostDialog 
+               trigger={
+                <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-primary"
+                onClick={()=>{}}
+              >
+                <BotIcon className="size-4 mr-[2px]" />
+                AI Writer
+              </Button>
+               }
+               />
             </div>
             <Button
               className="flex items-center"

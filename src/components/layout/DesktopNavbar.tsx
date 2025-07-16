@@ -8,7 +8,8 @@ import {
 } from '@clerk/nextjs'
 import { currentUser } from "@clerk/nextjs/server";
 import { syncUser } from "@/actions/user.actions";
-import LordIcon from "../shared/LordIcon"
+import { Input } from "../ui/input";
+import SearchDialog from "../shared/SearchDialog";
 
 async function DesktopNavbar() {
 
@@ -21,6 +22,16 @@ async function DesktopNavbar() {
 
   return (
     <div className="hidden md:flex items-center space-x-4">
+
+      <SearchDialog
+      trigger={
+        <Input
+        placeholder="Search"
+        className="w-32"
+       />
+      }
+      />
+
       <Themetoggle />
 
       <Button variant="ghost" className="flex items-center gap-2" asChild>
@@ -29,6 +40,7 @@ async function DesktopNavbar() {
           <span className="hidden lg:inline">Home</span>
         </Link>
       </Button>
+
 
   
        { user ? (
@@ -45,11 +57,6 @@ async function DesktopNavbar() {
                 user.username ?? user.emailAddresses[0].emailAddress.split("@")[0]
               }`}
             >
-            {/* <LordIcon
-             src="https://cdn.lordicon.com/cniwvohj.json"
-             trigger="hover"
-             colors="primary:#ffffff"
-            /> */}
               <span className="hidden lg:inline">Profile</span>
             </Link>
           </Button>
