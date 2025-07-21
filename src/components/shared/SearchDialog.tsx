@@ -18,11 +18,10 @@ import { successToast } from './Toast';
 import { Return } from '@prisma/client/runtime/library';
 import { getAllUsers } from '@/actions/user.actions';
 import { DialogTrigger } from '@radix-ui/react-dialog';
-import { UserProfile } from '@clerk/nextjs';
+
 import Link from 'next/link';
 
 type Users = Awaited<Return<typeof getAllUsers>>
-
 
 function SearchDialog({trigger}:{trigger:React.ReactNode}) {
   
@@ -33,7 +32,7 @@ const [users, setUsers] =useState<Users>([])
 useEffect(()=>{
    const fetchUsers = async () =>{
       const allusers = await getAllUsers()
-      const filteredUsers = allusers.filter((user) => user?.name.toLowerCase().includes(name.toLowerCase()));
+      const filteredUsers = allusers?.filter((user) => user?.name?.toLowerCase().includes(name.toLowerCase()));
       setUsers(filteredUsers)
       console.log("all users",allusers);
    }
@@ -50,17 +49,18 @@ useEffect(()=>{
         <Input placeholder='Search' 
          value={name} 
          onChange={(e)=>setName(e.target.value)}
-         className='w-full mt-2 '
+         className='w-full mt-2 bg-secondary'
          />
       </DialogTitle>
       <DialogDescription className='w-full mt-4'>
-    <div className='w-full space-y-2'>
-      {users.length > 0 ? users.map((user) => (
-        <div key={user.id} className="flex items-center justify-between border-b-2 border-border pb-2">
+    <div className='w-full space-y-2 text-center'>
+     
+     {name && ((users ?? []).length > 0) ? users?.map((user) => (
+        <div key={user.id} className="flex items-center justify-between border-b-2 mb-4 border-border pb-2">
           <div className="flex items-center">
             <img
-              src={user.image}
-              alt={user.name}
+              src={user.image || ""}
+              alt={user.name || ""}
               className="w-8 h-8 rounded-full mr-2"
             />
             <span>{user.name}</span>
@@ -73,7 +73,9 @@ useEffect(()=>{
             </Link>
           </div>
         </div>
-      )) : <span>No users found</span>}
+      )) : name && users?.length === 0 ? (
+        <span className="text-center text-sm">No users found</span>
+      ):<span className="text-center text-sm">Search for Users</span>}
       </div>
       </DialogDescription>
     </DialogHeader>

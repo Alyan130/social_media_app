@@ -27,7 +27,8 @@ export async function getNotifications(){
             select:{
                 id:true,
                 content:true,
-                image:true
+                mediaType:true,
+                mediaUrl:true
             },
         },
        comment:{

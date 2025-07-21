@@ -1,11 +1,8 @@
 import { getProfileByUser, getUserLikedPosts, getUserPosts, isFollowing } from "@/actions/profile.action"
 import ProfilePageClient from "@/components/ProfilePageClient"
 
-
 export async function generateMetadata({params}:{params:{name:string}}) {
-  
   const username = await getProfileByUser(params.name)
-
   if(!username) return
   return {
     title: username.name,
@@ -25,7 +22,7 @@ if(!user) return <div>User not found</div>
     isFollowing(user.id)
   ])
 
-  console.log(posts, likedPosts, isfollowing);
+  console.log("posts",posts, "likedposts",likedPosts, isfollowing);
   
 
   return (
@@ -34,7 +31,7 @@ if(!user) return <div>User not found</div>
     user={user}
     posts={posts}
     likedPosts={likedPosts}
-    isfollowing={isfollowing}
+    isFollowing={isfollowing || false}
     />
   </>
     )

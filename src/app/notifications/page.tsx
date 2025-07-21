@@ -18,6 +18,9 @@ function Notificationspage() {
   const [notifications,setNotifications] = useState<Notification[]>()
   const [loading,setLoading] = useState(true)
  
+  const unreadNotifications = notifications?.filter((n) => !n.read)
+  const isRead = ((unreadNotifications ?? []).length > 0) ? true : false;
+
 
 const getNotificationIcon = (type:string) =>{
    switch(type){
@@ -39,8 +42,8 @@ useEffect(()=>{
       setNotifications(notifications)
        
       const unreadIds = notifications?.filter((n)=>!n.read).map((n)=>n.id)
-      if(unreadIds?.length > 0){
-        await readNotifications(unreadIds)
+      if((unreadIds ?? []).length > 0){
+        await readNotifications(unreadIds ?? [])
       }
     }catch(error){
       console.log("Error getting notifications",error);
@@ -69,10 +72,9 @@ useEffect(()=>{
         </CardHeader>
         <CardContent className="p-0">
           <ScrollArea className="h-[calc(100vh-12rem)]">
-            {notifications?.length === 0 ? (
-              <div className="p-4 text-center text-muted-foreground">No notifications yet</div>
-            ) : (
-              notifications?.map((notification) => (
+            {!isRead || notifications?.length === 0 ? (
+              <div className="p-4 text-center text-muted-foreground">No new notifications yet</div>
+            ) : (isRead && notifications?.map((notification) => (
                 <div
                   key={notification.id}
                   className={`flex items-start gap-4 p-4 border-b hover:bg-muted/25 transition-colors ${
@@ -102,13 +104,21 @@ useEffect(()=>{
                         <div className="pl-6 space-y-2">
                           <div className="text-sm text-muted-foreground rounded-md p-2 bg-muted/30 mt-2">
                             <p>{notification.post.content}</p>
-                            {notification.post.image && (
+                            {notification.post.mediaUrl && notification.post.mediaType === "image" && (
                               <img
-                                src={notification.post.image}
+                                src={notification.post.mediaUrl}
                                 alt="Post content"
                                 className="mt-2 rounded-md w-full max-w-[200px] h-auto object-cover"
                               />
                             )}
+                            {notification.post.mediaUrl && notification.post.mediaType === "video" && (
+                              <video
+                                src={notification.post.mediaUrl}
+                                controls
+                                className="mt-2 rounded-md w-full max-w-[200px] h-auto object-cover"
+                              />
+                            )
+                            }
                           </div>
 
                           {notification.type === "COMMENT" && notification.comment && (

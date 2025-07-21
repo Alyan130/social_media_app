@@ -37,8 +37,6 @@ export async function syncUser(){
 
 
 
-
-
 export async function getUserByClerkId(clerkId: string){
   try{
     const dbUser = await prisma.user.findUnique({

@@ -4,19 +4,29 @@ import { Button } from "@/components/ui/button";
 import Themetoggle from "../toggle";
 
 import { SignInButton, SignOutButton , useAuth} from "@clerk/nextjs";
-import { LogOutIcon } from "lucide-react";
+import SearchDialog from "../shared/SearchDialog";
+import { Input } from "../ui/input";
 
 function MobileNavbar() {
   const {isSignedIn} = useAuth()
 
   return (
-    <div className="flex md:hidden items-center space-x-2">
+    <div className="flex md:hidden items-center space-x-1">
+      <SearchDialog
+      trigger={
+        <Input
+        placeholder="Search"
+        className="w-[90px] bg-secondary border-primary" 
+       />
+      }
+      />
       <Themetoggle />
 
       {isSignedIn ? (
         <SignOutButton>
-          <Button variant="ghost">
-            <LogOutIcon className="w-4 h-4" />
+          <Button 
+          variant={"outline"}
+          >
             Logout
           </Button>
         </SignOutButton>

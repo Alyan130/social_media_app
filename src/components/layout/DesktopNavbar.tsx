@@ -21,13 +21,13 @@ async function DesktopNavbar() {
 
 
   return (
-    <div className="hidden md:flex items-center space-x-4">
+    <div className="hidden md:flex items-center space-x-4 bg-background">
 
       <SearchDialog
       trigger={
         <Input
         placeholder="Search"
-        className="w-32"
+        className="w-32 bg-secondary border-primary" 
        />
       }
       />

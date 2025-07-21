@@ -22,9 +22,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Socially",
+  title: "ShareSpark",
   description: "A social media application using Next.js",
-};
+}
 
 export default function RootLayout({
   children,

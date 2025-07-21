@@ -223,9 +223,6 @@ finally{
        )}
        {user ? (
                     <div className="flex space-x-4">
-                      <Avatar className="size-8 flex-shrink-0">
-                        <AvatarImage src={user?.user?.imageUrl || "/avatar.png"} />
-                      </Avatar>
                       <div className="flex-1">
                         <Textarea
                           placeholder="Write a comment..."

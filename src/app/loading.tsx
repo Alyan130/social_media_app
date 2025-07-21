@@ -1,17 +1,13 @@
-import { Loader2Icon } from 'lucide-react'
-import React from 'react'
-
-function loading() {
+export default function Loading() {
   return (
-    <>
-    <div className='min-h-screen flex justify-center items-center'>
-      <div className='flex flex-col justify-center items-center space-y-2'>
-        <Loader2Icon className='size-16 animate-spin text-muted-foreground'/>
-       <h2 className='text-xl font-semibold text-muted-foreground'>Loading...</h2>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="flex flex-col items-center space-y-6 mt-4">
+      <div className="relative">
+        <div className="w-16 h-16 border-4 border-gray-300 rounded-full animate-spin border-t-transparent"></div>
+        <div className="absolute inset-3 w-10 h-10 bg-blue-500 rounded-full animate-ping opacity-75"></div>
       </div>
+      <p className="text-lg text-gray-600 font-medium">Loading...</p>
     </div>
-    </>
-  )
+  </div>
+)
 }
-
-export default loading

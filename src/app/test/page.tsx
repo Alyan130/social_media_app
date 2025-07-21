@@ -1,28 +1,33 @@
-"use client"
+'use client';
 
-import PostDialog from '@/components/shared/AIDilalog'
-import { Button } from '@/components/ui/button'
-import React from 'react'
+import { Button } from '@/components/ui/button';
+import { useCompletion } from '@ai-sdk/react';
 
-function page() {
+export default function Page() {
+
+  const { completion, complete } = useCompletion({
+    api: 'http://localhost:3000/api/completion',
+  });
+  
+
   return (
-    <div>
-        <PostDialog
-               trigger={
-                <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-primary"
-                onClick={()=>{}}
-              >
-                <Button className="size-4 mr-[2px]" />
-                AI Writer
-              </Button>
-               }
-            />
+    <div className='flex flex-col space-y-6'>
+      <Button
+        onClick={async ()=>{
+          try{
+           let result = await complete('Why is the sky blue?');
+           console.log(result);
+          }catch(e){
+            console.log(e);
+          }
+        }}
+        className='max-w-24'
+      >
+        generate
+        </Button>
+        <div className='w-80 bg-slate-300 text-black p-2 py-10'>
+        {completion}
+        </div>
     </div>
-  )
+  );
 }
-
-export default page

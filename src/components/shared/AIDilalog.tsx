@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { X, Copy, Plus } from "lucide-react";
 import { successToast } from './Toast';
-import { runAgent } from '@/actions/agent.action';
+import {useCompletion}  from "@ai-sdk/react"
 
 interface PostData {
   title: string;
@@ -37,8 +37,10 @@ export default function PostDialog({ trigger}: PostDialogProps) {
     keywords: []
   });
   const [currentKeyword, setCurrentKeyword] = useState('');
-
-
+  const [generation ,showGeneration] = useState(false);
+ const   {complete,completion} = useCompletion({
+   api:"/api/completion"
+  })
 
 const handleAddKeyword = () => {
     if (currentKeyword.trim() && !formData.keywords.includes(currentKeyword.trim())) {
@@ -57,7 +59,7 @@ const handleRemoveKeyword = (keyword: string) => {
       keywords: prev.keywords.filter(k => k !== keyword)
     }));
   };
-
+    
   
 
   const handleKeywordKeyPress = (e: React.KeyboardEvent) => {
@@ -73,15 +75,21 @@ const handleRemoveKeyword = (keyword: string) => {
       
       setIsSubmitting(true);
       setOutput('');
-      
+      showGeneration(true);
       try {
-          const result = await runAgent(formData);
-          
-          if (result?.success) {
-              setOutput(result.result);
+        
+        const prompt = `
+          Post title: ${formData.title}
+          Post description: ${formData.description}
+          Post keywords: ${formData.keywords.join(", ")}
+         `
+         
+        const result =  await complete(prompt)    
+          if (result) {
+              setOutput(completion);
               successToast("AI created post successfully!");
           } else {
-              setOutput(result.error || 'Error occurred while processing your request.');
+              setOutput('Error occurred while processing your request.');
           }
       } catch (error) {
           console.error('Error running agent:', error);
@@ -137,7 +145,7 @@ const handleRemoveKeyword = (keyword: string) => {
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               required
-              className="bg-primary-foreground text-black placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm"
+              className=" text-white placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm"
             />
           </div>
 
@@ -152,7 +160,7 @@ const handleRemoveKeyword = (keyword: string) => {
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
               required
-              className="bg-primary-foreground text-black placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm resize-none"
+              className=" text-white placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm resize-none"
             />
           </div>
 
@@ -167,7 +175,7 @@ const handleRemoveKeyword = (keyword: string) => {
                 value={currentKeyword}
                 onChange={(e) => setCurrentKeyword(e.target.value)}
                 onKeyPress={handleKeywordKeyPress}
-                className="bg-primary-foreground text-black placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm"
+                className="  text-white placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500 rounded-sm"
               />
               <Button 
                 type="button" 
@@ -214,7 +222,7 @@ const handleRemoveKeyword = (keyword: string) => {
           </Button>
         </form>
 
-        {output && (
+        {generation &&
           <div className="mt-6 space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-slate-700 text-sm font-medium">Generated Content</Label>
@@ -231,11 +239,11 @@ const handleRemoveKeyword = (keyword: string) => {
             </div>
             <div className="bg-slate-100 p-4 rounded-sm border border-slate-300">
               <pre className="whitespace-pre-wrap text-sm text-slate-900 font-mono">
-                {output}
+              {completion}
               </pre>
             </div>
           </div>
-        )}
+        }
       </DialogContent>
     </Dialog>
   );
