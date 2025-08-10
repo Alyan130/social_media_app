@@ -1,4 +1,4 @@
-import {streamText} from "ai"
+import {streamText} from 'ai'
 import {google} from "@ai-sdk/google"
 import { socialPrompt } from "@/lib/prompt";
 
